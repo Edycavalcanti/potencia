@@ -1,0 +1,49 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name)
+
+students = []
+
+class Student:
+    def __init__(self, id, name, age, grade1, grade2, professor, room):
+        self.id = id
+        self.name = name
+        self.age = age
+        self.grade1 = grade1
+        self.grade2 = grade2
+        self.professor = professor
+        self.room = room
+
+@app.route('/students', methods=['POST'])
+def add_student():
+    data = request.get_json()
+    student = Student(
+        len(students) + 1,
+        data['name'],
+        data['age'],
+        data['grade1'],
+        data['grade2'],
+        data['professor'],
+        data['room']
+    )
+    students.append(student)
+    return jsonify({"message": "Student added successfully"}), 201
+
+@app.route('/students', methods=['GET'])
+def get_students():
+    student_list = []
+    for student in students:
+        student_list.append({
+            'id': student.id,
+            'name': student.name,
+            'age': student.age,
+            'grade1': student.grade1,
+            'grade2': student.grade2,
+            'professor': student.professor,
+            'room': student.room
+        })
+    return jsonify(student_list)
+
+if __name__ == '__main__':
+    app.run(debug=True, host="0.0.0.0", port=8080)
+poetry run python app.py
